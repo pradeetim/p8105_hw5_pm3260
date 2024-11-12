@@ -1,0 +1,12 @@
+---
+title: "p8105_hw5_pm3260"
+author: "Pradeeti Mainali"
+date: "2024-11-12"
+output: github_document
+---
+
+# Problem 1
+
+# Problem 2
+
+# Problem 3

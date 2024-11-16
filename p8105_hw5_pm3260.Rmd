@@ -14,16 +14,50 @@ library(purrr)
 # Problem 1: Practice
 
 ```{r}
+set.seed(100)
+
 birthday = function(n) {
-  birthdays <- sample(1:365, size = n, replace = TRUE) 
+  
+  birthdays = sample(1:365, 
+                     size = n, 
+                     replace = TRUE) 
   
   any(duplicated(birthdays))
+  
 }
 
-set.seed(100)
+group_sizes = 2:50
+sims = 10000
+probabilities = numeric(length(group_sizes))
+
+for (i in seq_along(group_sizes)) {
+  group_size = group_sizes[i]
+  results = replicate(sims, birthday(group_size))
+  probabilities[i] = mean(results)
+  
+}
+
+sim_res = data.frame(group_size = group_sizes, 
+                     probability = probabilities)
+
 ```
 
+#### Plotting
 
+```{r}
+ggplot(sim_res, 
+       aes(x = group_size, y = probability)) +
+  geom_line(color = "hotpink", linewidth  = 1) +
+  geom_point(color = "black", size = 2) +
+  labs(
+    title = "Probability of Shared Birthday as a Function of Group Size",
+    x = "Group Size",
+    y = "Probability of Shared Birthday"
+  ) +
+  theme_minimal()
+```
+
+As group size increases, so does the probability that two people share a birthday.
 
 # Problem 2: Explore Power
 
@@ -65,7 +99,8 @@ results2_df =
     mu = c(1, 2, 3, 4, 5, 6),
     iter = 1:5000
   ) |> 
-  mutate(results2_df = map(mu, ~sim_q2(n = 30, mu = .x, sigma = 5))) |> 
+  mutate(results2_df = 
+           map(mu, ~sim_q2(n = 30, mu = .x, sigma = 5))) |> 
   unnest(results2_df) 
 ```
 
@@ -148,6 +183,7 @@ unsolved_prop = function(city_st) {
     select(estimate, conf.low, conf.high)
   
   return(tidy_result)
+  
 }
 
 baltimore_results = unsolved_prop("Baltimore, MD")
@@ -185,7 +221,8 @@ homicide_plot =
 
 ggplot(homicide_plot, aes(x = city_state, y = estimate)) +
   geom_point(size = 2, color = "black") +
-  geom_errorbar(aes(ymin = conf.low, ymax = conf.high), width = 0.3, color = "red") +  
+  geom_errorbar(
+    aes(ymin = conf.low, ymax = conf.high), width = 0.3, color = "red") +  
   coord_flip() +  
   labs(
     title = "Proportion of Unsolved Homicides by City",
